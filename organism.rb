@@ -21,23 +21,21 @@ class Organism
 
 	def from_chromosomes!
 		chromosomes.each do |chromosome| 
-			send("#{ chromosome.variable_name }=", chromosome.value)
+			self.send("#{ chromosome.variable_name }=", chromosome.value)
 		end
 	end
 
 	def mutate chromosomes
 		mutation_index = @random_generator.rand(chromosomes.length)
 
-		chromosome = chromosomes[mutation_index]
-		old_value = chromosome.value
-		chromosome.mutate!
-
-		p "Mutate chromsome #{ chromosome.variable_name } from #{ old_value } to #{ chromosome.value }"
-
+		chromosome 									= chromosomes[mutation_index]
+		old_value 									= chromosome.value
+		chromosomes[mutation_index] = chromosome.mutate!
+		
 		chromosomes
 	end
 
-	def mutate!
+	def mutate!		
 		self.chromosomes = mutate chromosomes
 
 		from_chromosomes!
@@ -56,27 +54,24 @@ class Organism
 	end
 
 	def to_s
-		"Chromosomes: '[ #{ chromosomes.join(', ') } ] ', Fitness: #{ fitness }"
+		"Chromosomes: '[ #{ chromosomes.join(', ') } ]', \tFitness: #{ fitness }"
 	end
 
 	private
 
 	def self.one_point_crossover random_generator, mother, father
-		p "Performing crossover:"
-		crossover_point = random_generator.rand(mother.chromosomes.length)
-		p "Crossover point: #{ crossover_point }"
+		# i dont like this :(
+		chromosome_length = mother.chromosomes.length
 
-		p "Mother: #{ mother.to_s }"
-		p "Father: #{ father.to_s }"
+		
+		crossover_point = random_generator.rand(chromosome_length-1)
+
 		children = []
 		children << father.chromosomes[0..crossover_point] + mother.chromosomes[crossover_point+1..chromosome_length-1]
 		children << mother.chromosomes[0..crossover_point] + father.chromosomes[crossover_point+1..chromosome_length-1]
 
-		children.map! {|child| from_chromosomes(random_generator, child).mutate! }
-
-		children.each do |child|
-			p "Child: #{ child.to_s }"
-		end
+		children.map! { |child| from_chromosomes(random_generator, child) }
+		children.each { |child| child.mutate! }
 
 		children
 	end

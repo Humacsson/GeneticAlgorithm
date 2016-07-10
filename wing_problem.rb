@@ -4,27 +4,27 @@ require_relative 'chromosome'
 class WingProblem < Organism
 	include Comparable
 
-	attr_accessor :var_a, :var_b, :var_c, :var_d
+	attr_accessor :_A, :_B, :_C, :_D
 
 	def initialize random_generator
 		@random_generator = random_generator
 
 		self.chromosomes = [
-			Chromosome.new(@random_generator, 'var_a', 0, 63),
-			Chromosome.new(@random_generator, 'var_b', 0, 63),
-			Chromosome.new(@random_generator, 'var_c', 0, 63),
-			Chromosome.new(@random_generator, 'var_d', 0, 63)
+			Chromosome.new(@random_generator, '_A', 0, 63),
+			Chromosome.new(@random_generator, '_B', 0, 63),
+			Chromosome.new(@random_generator, '_C', 0, 63),
+			Chromosome.new(@random_generator, '_D', 0, 63)
 		]
 
 		from_chromosomes!
 	end
 
 	def fitness
-		((var_a - var_b)^2) + ((var_c - var_d)^2) - ((var_a - 30)^3) - ((var_c - 40) ^ 3)
+		((_A - _B)^2) + ((_C - _D)^2) - ((_A - 30)^3) - ((_C - 40) ^ 3)
 	end
 
 	def to_s
-		super + ", A: #{ var_a }, B: #{ var_b }, C: #{ var_c }, D: #{ var_d }"
+		super + ", A: #{ _A }, B: #{ _B }, C: #{ _C }, D: #{ _D }"
 	end
 
 	def <=> (other)

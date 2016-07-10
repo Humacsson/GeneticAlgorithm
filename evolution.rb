@@ -11,17 +11,25 @@ class Evolution
 		mother = nil
 		father = nil
 
-		while generation_count <= 10000
-			generation = build_generation WingProblem, random_generator, mother, father
+		generation = build_generation WingProblem, random_generator
+
+		while generation_count <= 10
+			puts ""
+			puts "Generation ##{ generation_count }"
+			puts "-----------------------------------"
+			puts "Mother: #{ mother.to_s }"
+			puts "Father: #{ father.to_s }"
+			puts ""
+			#puts "Children:"
+			#generation.each do |child|
+			#puts "\t #{ child.to_s }"
+			#end
 			
 			mother = generation[0]
 			father = generation[1]
 
+			generation = build_generation WingProblem, random_generator, mother, father
 			generation_count += 1
-
-			p "Generation ##{ generation_count }"
-			p "Mother: #{ mother.to_s }"
-			p "Father: #{ father.to_s }"
 		end
 	end		
 
@@ -38,7 +46,7 @@ class Evolution
 			end
 		end
 
-		generation.sort!
+		generation.sort!		
 
 		generation
 	end
