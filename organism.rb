@@ -2,65 +2,68 @@
 class Organism
 	attr_accessor :chromosomes
 
-	def mutate chromosomes, random_generator
-		mutation_index = random_generator.rand(chromosome_length)
-		
-		chromosomes[mutation_index] = chromosomes[mutation_index].zero? ? 1 : 0
-
-		chromosomes
+	def initialize random_generator
+		@random_generator = random_generator
 	end
-
-	def mutate! random_generator
-		self.chromosomes = mutate chromosomes, random_generator
-
-		self
-	end
-
+	
 	def fitness
 		fail NotImplementedError
 	end
 
-	def self.from_chromosomes chromosomes
-		fail NotImplementedError
+	def self.from_chromosomes random_generator, chromosomes
+		instance = new random_generator
+
+		instance.chromosomes = chromosomes
+		instance.from_chromosomes!
+
+		instance
 	end
 
-	def self.crossover random_generator, mother, father
-		crossover_point 			= random_generator.rand(chromosome_length)
+	def from_chromosomes!
+		chromosomes.each do |chromosome| 
+			send("#{ chromosome.variable_name }=", chromosome.value)
+		end
+	end
+
+	def mutate chromosomes
+		mutation_index = @random_generator.rand(chromosomes.length)
+
+		chromosomes[mutation_index].mutate!
+
+		chromosomes
+	end
+
+	def mutate!
+		self.chromosomes = mutate chromosomes
+
+		self
+	end
+
+	module CrossoverTypes 
+		ONE_POINT 	= 1
+	end
+
+	def self.crossover random_generator, mother, father, crossover_type
+		if crossover_type == CrossoverTypes::ONE_POINT
+			one_point_crossover random_generator, mother, father
+		end
+	end
+
+	def to_s
+		"Chromosomes: '[ #{ chromosomes.join(', ') } ] ', Fitness: #{ fitness }"
+	end
+
+	private
+
+	def self.one_point_crossover random_generator, mother, father
+		crossover_point = random_generator.rand(mother.chromosomes.length)
 
 		children = []
 		children << father.chromosomes[0..crossover_point] + mother.chromosomes[crossover_point+1..chromosome_length-1]
 		children << mother.chromosomes[0..crossover_point] + father.chromosomes[crossover_point+1..chromosome_length-1]
 
-		children.map! {|child| from_chromosomes(child).mutate!(random_generator) }
+		children.map! {|child| from_chromosomes(random_generator, child).mutate! }
 
 		children
-	end
-
-	def self.random random_generator
-		chromosomes = random_chromosomes random_generator
-
-		from_chromosomes chromosomes
-	end
-
-	private
-
-	def self.random_chromosomes random_generator
-		chromosomes = []
-
-		chromosome_length.times do
-			chromosomes << random_generator.rand(2)
-		end
-
-		chromosomes
-	end
-
-	def to_s
-		"Chromosome: #{ chromosomes.join }, Fitness: #{ fitness }"
-	end
-
-	protected
-
-	def self.chromosome_length
-		fail NotImplementedError
 	end
 end

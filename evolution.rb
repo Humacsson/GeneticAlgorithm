@@ -12,7 +12,7 @@ class Evolution
 		father = nil
 
 		while generation_count <= 10000
-			generation = build_generation CardProblem, random_generator, mother, father
+			generation = build_generation WingProblem, random_generator, mother, father
 			
 			mother = generation[0]
 			father = generation[1]
@@ -30,11 +30,11 @@ class Evolution
 		
 		if mother.nil? && father.nil?
 			GENERATION_ORGANISM_COUNT.times do
-				generation << organism_class.random(random_generator)
+				generation << organism_class.new(random_generator)
 			end
 		else
 			(GENERATION_ORGANISM_COUNT/2).times do
-				generation += organism_class.crossover(random_generator, mother, father)
+				generation += organism_class.crossover(random_generator, mother, father, Organism::CrossoverTypes::ONE_POINT)
 			end
 		end
 

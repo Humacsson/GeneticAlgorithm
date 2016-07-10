@@ -5,10 +5,18 @@ class CardProblem < Organism
 
 	SUM_TARGET 			= 36
 	PRODUCT_TARGET 		= 360
-	CARDS 				= (1..15).to_a
+	CARDS 				= [ [1], [2], [3], [4], [5], [6], [7], [8], [9], [10] ]
 
 	attr_accessor 	:sum, 		:sum_pile,
 					:product, 	:product_pile
+
+	def initialize random_generator
+		@random_generator = random_generator
+
+		self.chromosomes = [
+			Chromosome.new(@random_generator, 'sum_pile')
+		]
+	end
 
 	def fitness
 		sum_fitness 	= sum.to_f 		/ SUM_TARGET
@@ -27,7 +35,7 @@ class CardProblem < Organism
 		instance.product_pile 		= []
 
 		instance.chromosomes.each_with_index do |chromosome, index|
-			if chromosome.zero?
+			if chromosome.value.zero?
 				instance.sum_pile 		<< CARDS[index]
 			else
 				instance.product_pile 	<< CARDS[index]
@@ -47,14 +55,4 @@ class CardProblem < Organism
 	def <=> (other)
 		self.fitness <=> other.fitness
   	end
-
-	private
-
-	def chromosome_length
-		CARDS.length
-	end
-
-	def self.chromosome_length
-		CARDS.length
-	end
 end
